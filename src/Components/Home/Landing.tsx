@@ -2,11 +2,13 @@ import { LinkUnlink } from "react-huge-icons/bulk";
 import image from "../../assets/pexels-tima-miroshnichenko-7567556.jpg";
 import Button from "../Component/Button";
 import Form from "../Component/Form";
-import tokenController from "./controller";
-
+import { useWriteContract } from "wagmi";
+import useContractCredentials from "./web3/credentials";
 
 const Landing = () => {
   // const { totalSupply } = tokenController();
+  const { writeContract } = useWriteContract();
+  const { abi, contractAddress: address } = useContractCredentials();
 
   return (
     <>
@@ -56,6 +58,26 @@ const Landing = () => {
             <span className="text-black "> MILLS TOKEN </span> DELIVERED
             STRAIGHT TO YOUR WALLET.
           </h1>
+
+          <h1>heyyyyyyyyyyyy</h1>
+
+          <button
+            onClick={() =>
+              writeContract({
+                abi,
+                address,
+                functionName: "transferFrom",
+                args: [
+                  // update the hardcoding to an address that has tokens or use the account hook
+                  "0xd2135CfB216b74109775236E36d4b433F1DF507B",
+                  "0xA0Cf798816D4b9b9866b5330EEa46a18382f251e",
+                  123n,
+                ],
+              })
+            }
+          >
+            Send transaction
+          </button>
 
           <h1 className="text-3xl font-extrabold text-gray-100 mr-5 text-center">
             <LinkUnlink className="inline text-5xl text-black" />{" "}
