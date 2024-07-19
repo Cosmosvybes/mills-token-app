@@ -1,52 +1,66 @@
-// import { useLayoutEffect, useState } from "react";
-import { getTokenName } from "./web3";
-// import { toast } from "react-toastify";
-// import { useAccount } from "wagmi";
+//  ====================================================================================================================================
+// import readContract from viem/actions
+//import the createPublicClient and the trasnport protocol from the view
+//import the chains to be used
+import { readContract } from "viem/actions";
+import { createPublicClient, http } from "viem";
+import { sepolia } from "viem/chains";
+import { abi } from "./abi";
+import { useLayoutEffect, useState } from "react";
 
-export default function tokenController() {
-  // const [totalSupply, setTotalSupply] = useState<string>("");
-  // const { address } = useAccount();
-  // const [wallet_adds] = useState<any>(address);
+const configClient = createPublicClient({
+  chain: sepolia,
+  transport: http(),
+});
+// ??========================================================================================================================================================================================================================================================================
+import { useWriteContract } from "wagmi";
+import { toast } from "react-toastify";
 
-  // const requestToken = async () => {
-  //   if (!address) {
-  //     toast.warn("connect your wallet address", { theme: "colored" });
-  //     return;
-  //   }
-  //   try {
-  //     const tx = await handleTokenRequest(address);
-  //     console.log(tx);
-  //     if (tx.transactionHash) {
-  //       toast.success("1000 Mills token sent", {
-  //         theme: "colored",
-  //       });
-  //     }
-  //   } catch (error) {
-  //     console.log(error);
-  //     toast.warning("Request in every 10 minutes", {
-  //       theme: "dark",
-  //     });
-  //   }
-  // };
+//??========================================================================================================================================================================================================================================================================
 
-  //retrieve token balance
-  // const getTokenBalance = async () => {
-  //   try {
-  //     const balance = await handleTokenBalance(wallet_adds);
-  //     toast.success(`You have ${balance} Mills token available `);
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
+export default function useContractMethods() {
+  const { writeContractAsync } = useWriteContract();
 
-  // useLayoutEffect(() => {
-  //   (async () => {
-  //     const _total = await tokenTotalSupply();
-  //     setTotalSupply(String(_total));
-  //   })();
-  // }, []);
+  const [supply_value, setSupplyValue] = useState<string>("");
 
-  return {
-    getTokenName,
+  async function _totalSupply() {
+    const totalSupplyValue = await readContract(configClient, {
+      abi: abi,
+      address: "0x2488A7cd65f003c254F19D6F129FC0a917B3183D",
+      functionName: "totalSupply",
+      args: [],
+    });
+    return totalSupplyValue;
+  }
+
+  async function balanceOf(address: any) {
+    const _balance = await readContract(configClient, {
+      abi,
+      address: "0x2488A7cd65f003c254F19D6F129FC0a917B3183D",
+      functionName: "balanceOf",
+      args: [address],
+    });
+    return _balance;
+  }
+
+  const _mintToken = (address: any) => {
+    writeContractAsync({
+      abi,
+      address: "0x2488A7cd65f003c254F19D6F129FC0a917B3183D",
+      functionName: "recieveTokenDrop",
+      args: [address],
+      account: address,
+    }).catch(() => {
+      toast.error("Sorry, you can token every 10 mins", { theme: "colored" });
+    });
   };
+
+  useLayoutEffect(() => {
+    (async () => {
+      let _value: any = await _totalSupply();
+      setSupplyValue(_value);
+    })();
+  }, []);
+
+  return { supply_value, balanceOf, _mintToken };
 }

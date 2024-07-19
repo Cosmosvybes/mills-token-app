@@ -2,11 +2,10 @@ import { LinkUnlink } from "react-huge-icons/bulk";
 import image from "../../assets/pexels-tima-miroshnichenko-7567556.jpg";
 import Button from "../Component/Button";
 import Form from "../Component/Form";
-import tokenController from "./controller";
-
+import useContractMethods from "./controller";
 
 const Landing = () => {
-  // const { totalSupply } = tokenController();
+  const { supply_value } = useContractMethods();
 
   return (
     <>
@@ -32,7 +31,7 @@ const Landing = () => {
                 {" "}
                 Total Supply Volume :{" "}
               </span>
-              {/* {totalSupply} */}
+              {String(supply_value)}
             </h1>
 
             <Form />
@@ -60,7 +59,7 @@ const Landing = () => {
           <h1 className="text-3xl font-extrabold text-gray-100 mr-5 text-center">
             <LinkUnlink className="inline text-5xl text-black" />{" "}
             <span className="text-black  "> Total Supply Volume : </span>{" "}
-            {/* {totalSupply} */}
+            {String(supply_value)}
           </h1>
 
           <div className="relative h-96 w-full  px-24 py-5">
