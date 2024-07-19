@@ -51,7 +51,7 @@ export default function useContractMethods() {
       args: [address],
       account: address,
     }).catch(() => {
-      toast.error("Sorry, you can token every 10 mins", { theme: "colored" });
+      toast.error("Sorry, you can onmly mint token every 10 mins", { theme: "colored" });
     });
   };
 
