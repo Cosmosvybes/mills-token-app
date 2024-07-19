@@ -10,7 +10,7 @@ const projectId = "1028e6cd70d9e451d11275c9cda97e19";
 const metadata = {
   name: "Web3Modal",
   description: "Mills token",
-  url: "http://localhost:5173", // origin must match your domain & subdomain
+  url: "https://mills-token-app.vercel.app", // origin must match your domain & subdomain
   icons: ["https://avatars.githubusercontent.com/u/37784886"],
 };
 
@@ -30,7 +30,7 @@ createWeb3Modal({
   projectId,
   enableAnalytics: true, // Optional - defaults to your Cloud configuration
   enableOnramp: true, // Optional - false as default
-})
+});
 
 export default function walletConnectController() {
   return {
