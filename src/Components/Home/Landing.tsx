@@ -1,6 +1,5 @@
 import { LinkUnlink } from "react-huge-icons/bulk";
 import image from "../../assets/pexels-tima-miroshnichenko-7567556.jpg";
-import Button from "../Component/Button";
 import Form from "../Component/Form";
 import useContractMethods from "./controller";
 
@@ -14,9 +13,7 @@ const Landing = () => {
           style={{ backgroundImage: `url(${image})` }}
           className="relative w-1/2 max-md:w-full max-md:h-screen max-md:flex-col  max-sm:w-full  max-sm:flex-col  max-sm:h-screen flex justify-center items-center bg-slate-300 max-sm:bg-black  h-full max-sm:bg-no-repeat max-sm:bg-contain object-contain bg-no-repeat bg-cover"
         >
-          <div className="relative  flex justify-start max-sm:justify-center items-baseline  h-30  max-sm:h-72  w-72 max-sm:w-full max-sm:px-12 px-10 py-5 ">
-            <Button />
-          </div>
+          <div className="relative  flex justify-start max-sm:justify-center items-baseline  h-30  max-sm:h-72  w-72 max-sm:w-full max-sm:px-12 px-10 py-5 "></div>
 
           <div className="relative h-full w-full  justify-center flex-col items-center px-0 hidden max-sm:flex  py-5">
             <h1 className="text-xl  font-extrabold text-gray-100 text-center">
