@@ -1,66 +1,110 @@
 //  ====================================================================================================================================
-// import readContract from viem/actions
-//import the createPublicClient and the trasnport protocol from the view
-//import the chains to be used
-import { readContract } from "viem/actions";
-import { createPublicClient, http } from "viem";
-import { sepolia } from "viem/chains";
-import { abi } from "./abi";
-import { useLayoutEffect, useState } from "react";
 
-const configClient = createPublicClient({
-  chain: sepolia,
-  transport: http(),
-});
-// ??========================================================================================================================================================================================================================================================================
-import { useWriteContract } from "wagmi";
+import { ethers } from "ethers";
+import { abi, contractAddress } from "./abi";
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
-//??========================================================================================================================================================================================================================================================================
+// ============================================================================================================================
+// WRITE TO CONTRACT
+// ============================================================================================================================
+
+// ============================================================================================================================
+
+// ============================================================================================================================
+
+const ethereum = (window as any).ethereum;
 
 export default function useContractMethods() {
-  const { writeContractAsync } = useWriteContract();
+  const [currentWallet, setCurrentWallet] = useState<string>("");
+  const [tokenBalance, setTokenBalance] = useState<any>(0);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const [supply_value, setSupplyValue] = useState<string>("");
-
-  async function _totalSupply() {
-    const totalSupplyValue = await readContract(configClient, {
-      abi: abi,
-      address: "0x2488A7cd65f003c254F19D6F129FC0a917B3183D",
-      functionName: "totalSupply",
-      args: [],
-    });
-    return totalSupplyValue;
+  async function connectWallet() {
+    if (!ethereum) return alert("Kindly install metamask");
+    const accounts = await ethereum.request({ method: "eth_requestAccounts" });
+    setCurrentWallet(accounts[0]);
   }
 
-  async function balanceOf(address: any) {
-    const _balance = await readContract(configClient, {
-      abi,
-      address: "0x2488A7cd65f003c254F19D6F129FC0a917B3183D",
-      functionName: "balanceOf",
-      args: [address],
-    });
-    return _balance;
+  async function getEthereumContract() {
+    try {
+      const provider = new ethers.BrowserProvider(ethereum);
+      const signer = await provider.getSigner();
+      const smartContractTransaction = new ethers.Contract(
+        contractAddress,
+        abi,
+        signer
+      );
+
+      return smartContractTransaction;
+    } catch (error: any) {
+      console.log(error.message);
+    }
   }
 
-  const _mintToken = (address: any) => {
-    writeContractAsync({
-      abi,
-      address: "0x2488A7cd65f003c254F19D6F129FC0a917B3183D",
-      functionName: "recieveTokenDrop",
-      args: [address],
-      account: address,
-    }).catch(() => {
-      toast.error("Sorry, you can onmly mint token every 10 mins", { theme: "colored" });
-    });
+  async function receiveTokenFaucet() {
+    const smartContractTransaction = await getEthereumContract();
+    try {
+      const tx = await smartContractTransaction!.recieveTokenDrop(
+        currentWallet
+      );
+
+      await tx.wait();
+    } catch (error: any) {
+      toast.error("Try again in the next 10 mins");
+    }
+  }
+
+  async function getBalance() {
+    try {
+      const smartContractTransaction = await getEthereumContract();
+      const balance = await smartContractTransaction!.balanceOf(currentWallet);
+      setTokenBalance(ethers.toNumber(balance));
+      toast.success(`Your token balance is ${balance}`);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  const transferToken = async (
+    recepientAddress: string,
+    tokenAmount: string
+  ) => {
+    try {
+      const smartContractTransaction = await getEthereumContract();
+      setIsLoading(true);
+      const tx = await smartContractTransaction!.transfer(
+        recepientAddress,
+        Number(tokenAmount)
+      );
+      await tx.wait();
+      setIsLoading(false);
+    } catch (error) {
+      toast.error("something went wrong");
+      setIsLoading(false);
+    }
   };
 
-  useLayoutEffect(() => {
-    (async () => {
-      let _value: any = await _totalSupply();
-      setSupplyValue(_value);
-    })();
+  useEffect(() => {
+    connectWallet();
   }, []);
 
-  return { supply_value, balanceOf, _mintToken };
+  const disConnectWallet = async () => {
+    await ethereum.request({
+      method: "wallet_revokePermissions",
+      params: [{ eth_accounts: {} }],
+    });
+    setCurrentWallet("");
+  };
+
+  return {
+    connectWallet,
+    tokenBalance,
+    currentWallet,
+    receiveTokenFaucet,
+    getBalance,
+    disConnectWallet,
+    transferToken,
+    isLoading,
+  };
 }

@@ -222,3 +222,4 @@ export const abi = [
   },
   { type: "error", name: "InvalidAddress", inputs: [] },
 ];
+export const contractAddress = "0x2488A7cd65f003c254F19D6F129FC0a917B3183D";

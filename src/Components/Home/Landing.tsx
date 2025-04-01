@@ -5,8 +5,8 @@ import Form from "../Component/Form";
 import useContractMethods from "./controller";
 
 const Landing = () => {
-  const { supply_value } = useContractMethods();
-
+  const { connectWallet, disConnectWallet, currentWallet } =
+    useContractMethods();
   return (
     <>
       <div className="relative h-screen  flex justify-between max-md:h-screen max-md:flex-col max-sm:h-screen">
@@ -31,13 +31,28 @@ const Landing = () => {
                 {" "}
                 Total Supply Volume :{" "}
               </span>
-              {String(supply_value)}
             </h1>
 
-            <Form />
+            {currentWallet ? (
+              <button
+                className="bg-black text-yellow-500 border rounded-lg max-sm:w-full"
+                onClick={disConnectWallet}
+                type="button"
+              >
+                Disconnect
+              </button>
+            ) : (
+              <button
+                onClick={connectWallet}
+                className="bg-black text-yellow-500 border rounded-lg max-sm:w-full"
+              >
+                Connect wallet{" "}
+              </button>
+            )}
+            {currentWallet && <Form />}
           </div>
 
-          <div className="absolute bottom-4 left-0 flex justify-center flex-col items-center py-10 px-2  rounded-md  h-auto  w-full">
+          {/* <div className="absolute bottom-4 left-0 flex justify-center flex-col items-center py-10 px-2  rounded-md  h-auto  w-full">
             <h1 className="text-3xl max-sm:text-2xl font-semibold text-gray-100 mr-5">
               {" "}
               <span className="text-yellow-500 ">MILLS</span> TOKEN FAUCET.
@@ -46,7 +61,7 @@ const Landing = () => {
             <p className="text-yellow-500 text-sm  right-3 absolute bottom-0">
               Multi-purpose utility asset!
             </p>
-          </div>
+          </div> */}
         </div>
 
         <div className="relative h-full border-yello-500 max-md:w-full max-md:h-auto  max-sm:w-full  gap-10 flex-col max-sm:hidden px-10 flex justify-center  items-center bg-yellow-500 w-1/2">
@@ -59,7 +74,6 @@ const Landing = () => {
           <h1 className="text-3xl font-extrabold text-gray-100 mr-5 text-center">
             <LinkUnlink className="inline text-5xl text-black" />{" "}
             <span className="text-black  "> Total Supply Volume : </span>{" "}
-            {String(supply_value)}
           </h1>
 
           <div className="relative h-96 w-full  px-24 py-5">
