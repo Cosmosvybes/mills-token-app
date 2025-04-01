@@ -1,5 +1,4 @@
 import "./App.css";
-
 import "react-toastify/ReactToastify.css";
 import { ToastContainer } from "react-toastify";
 import { Web3ModalProvider } from "./Components/Home/web3/Provider";
